@@ -25,6 +25,7 @@ import org.apache.nifi.annotation.behavior.InputRequirement;
 import org.apache.nifi.annotation.behavior.InputRequirement.Requirement;
 import org.apache.nifi.annotation.behavior.SideEffectFree;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
+import org.apache.nifi.annotation.documentation.SeeAlso;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.annotation.lifecycle.OnScheduled;
 import org.apache.nifi.processor.exception.ProcessException;
@@ -42,7 +43,7 @@ import quickfix.Message;
 @Tags({"FIX Protocol", "XML"})
 @CapabilityDescription("Convert FIX message to XML")
 @InputRequirement(Requirement.INPUT_REQUIRED)
-//@SeeAlso(ExtractFIXFields.class)
+@SeeAlso(ExtractFIXFields.class)
 
 public class ConvertFIXtoXML extends AbstractProcessor {
    

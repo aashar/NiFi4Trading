@@ -1,25 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.aasharblog.nifi4trading</groupId>
-  <artifactId>nifi-fix-bundle</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
-  <name>NiFi FIX Components</name>
-  <description>This project contains a list of components developed for the NiFi for Trading blog at - https://wordpress.com/posts/aasharsite.wordpress.com.
-
-***  WARNING  ***
-
-None of these components are production ready. As much as these components have gone through minimum testing, they do not have enough unit test cases or have not been reviewed in detail.</description>
-  <packaging>pom</packaging>
-
-  <modules>
-  	<module>nifi-fix-processor-bundle</module>
-  	<module>fix-utilities</module>
-  </modules>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  	<nifi.version>1.1.0</nifi.version>
-  </properties>
-
+  <parent>
+    <groupId>org.aasharblog.nifi4trading</groupId>
+    <artifactId>nifi-fix-processor-bundle</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+  </parent>
+  <artifactId>nifi-fix-processors-nar</artifactId>
+  <packaging>nar</packaging>
+  <name>NAR package for FIX Processors</name>
+  <description>FIX Processors packaged in nar, NiFi packaging format</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.aasharblog.nifi4trading</groupId>
+  		<artifactId>nifi-fix-processors</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
@@ -42,6 +38,5 @@ None of these components are production ready. As much as these components have 
         </configuration>
       </plugin>
     </plugins>
-  </build>  
-  <url>https://github.com/aashar/NiFi4Trading/tree/master/nifi-fix-bundle</url>
+  </build>
 </project>
