@@ -4,7 +4,7 @@
   <artifactId>nifi-fix-bundle</artifactId>
   <version>0.0.2-SNAPSHOT</version>
   <name>NiFi FIX Components</name>
-  <description>This project contains a list of components developed for the NiFi for Trading blog at - https://wordpress.com/posts/aasharsite.wordpress.com.
+  <description>This project contains a list of components developed for the NiFi for Trading blog at - https://aasharsite.wordpress.com/.
 
 ***  WARNING  ***
 
