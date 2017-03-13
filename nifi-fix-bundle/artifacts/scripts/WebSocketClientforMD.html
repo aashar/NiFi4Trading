@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Book View</title>
+<style>
+  body { background-color:black; color: #ffffff; min-width:550px; font-family: "Trebuchet MS"; }
+  hr { clear:both; }
+  table { background-color:#333333; border:2px solid #555555; vertical-align: top; }
+  tbody tr:nth-child(even) { background: #666666; }
+  div.section { padding:2px; clear:both }
+  div.quotetable { padding:2px; display: inline-block; white-space: nowrap; }
+  label.divCaption { font-weight: bold; text-decoration: underline; }
+  button { background-color:#008CBA; padding: 5px 25px; text-align: center; border-radius: 6px;
+	display: inline-block; border: none; color: #ffffff; text-decoration: underline; }
+  button:hover { background-color: #DAA520; }
+  button:disabled { opacity: 0.6; text-decoration: none; cursor: not-allowed; }
+</style>
+<script language="javascript" type="text/javascript">
+  var wsUri = "ws://localhost:8084/marketData";
+  var acceptOrderResource="http://localhost:8086/order";
+  var refreshTime = 10000;
+  var bookSummary; var level1BidDiv; var level1AskDiv;
+
+  function init()
+  {
+    bookSummary = document.getElementById("bookSummary");
+    level1BidDiv = document.getElementById("level1BidDiv");
+    level1AskDiv = document.getElementById("level1AskDiv");
+    mdWebSocket();
+  }
+
+  function mdWebSocket()
+  {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function onOpen(evt)
+  {
+    logToScreen("CONNECTED");
+    document.getElementById("connectBtn").disabled = true;
+    document.getElementById("disconnectBtn").disabled = false;
+	document.getElementById("refreshBtn").disabled = false;
+	doSend();
+  }
+
+  function onClose(evt)
+  {
+    logToScreen("DISCONNECTED");
+    document.getElementById("connectBtn").disabled = false;
+    document.getElementById("disconnectBtn").disabled = true;
+	document.getElementById("refreshBtn").disabled = true;
+  }
+
+  function onMessage(evt)
+  {
+	try {
+		var msg = JSON.parse(evt.data);
+		updateInformation(msg);
+//		setInterval(doSend, refreshTime);
+	}
+	catch(err) {
+		logToScreen('<span style="color: red;">Non-JSON message:</span>' + evt.data + err);
+	}
+  }
+
+  function onError(evt)
+  {
+    logToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doClose()
+  {
+    websocket.close();
+  }
+
+  function doSend()
+  {
+	websocket.send("n"); // trigger refresh
+  }
+
+  function logToScreen(message)
+  {
+    bookSummary.style.wordWrap = "break-word";
+ 	document.getElementById("updTs").innerHTML = new Date().toJSON().slice(0,19).replace(/-/g,'/');
+ 	document.getElementById("serverMessage").innerHTML = message;
+  }
+
+  function sendOrder() {
+    var theUrl = acceptOrderResource +
+		"?SenderCompID="+ document.getElementById("SenderCompID").value +
+		"&Symbol="+ document.getElementById("Symbol").value +
+		"&Side="+ document.getElementById("Side").value +
+		"&OrderQty="+ document.getElementById("OrderQty").value +
+		"&Price="+ document.getElementById("Price").value;
+
+	try {
+		alert(theUrl);
+		var anHttpRequest = new XMLHttpRequest();
+		anHttpRequest.open( "GET", theUrl, false);
+		anHttpRequest.send( null );
+	} catch(err) {  }
+  }
+
+  function getNewTable() {
+	var table = document.createElement("table");
+	table.style.borderColor = "black";
+	var tr = table.insertRow(-1);
+	var th0 = document.createElement("th"); th0.innerHTML = "Symbol"; tr.appendChild(th0);
+	var th1 = document.createElement("th"); th1.innerHTML = "Quote"; tr.appendChild(th1);
+	
+	return table;
+  }
+  
+  function updateInformation(msg)
+  {
+ 	document.getElementById("updTs").innerHTML = new Date().toJSON().slice(0,19).replace(/-/g,'/');
+	
+	var totalBidsValue = 0;
+	var totalAsksValue = 0;
+
+	var topOfBookTable = document.createElement("table");
+	var tr = topOfBookTable.insertRow(-1);
+	var th0 = document.createElement("th"); th0.innerHTML = "Symbol"; tr.appendChild(th0);
+	var th1 = document.createElement("th"); th1.innerHTML = "Bids"; tr.appendChild(th1);
+	var th2 = document.createElement("th"); th2.innerHTML = "Top Bid"; tr.appendChild(th2);
+	var th3 = document.createElement("th"); th3.innerHTML = "Total Value"; tr.appendChild(th3);
+	var th4 = document.createElement("th"); th4.innerHTML = "Asks"; tr.appendChild(th4);
+	var th5 = document.createElement("th"); th5.innerHTML = "Top Ask"; tr.appendChild(th5);
+	var th6 = document.createElement("th"); th6.innerHTML = "Total Value"; tr.appendChild(th6);
+
+	var level1BidTable = getNewTable();
+	var level1AskTable = getNewTable();
+
+	msg.markets.forEach(function(element) {
+	  Object(element.market.bids).forEach(function(bidElement) {
+		totalBidsValue = totalBidsValue + (bidElement.quantity * bidElement.price);
+		var tr = level1BidTable.insertRow(-1);
+		var tabCell = tr.insertCell(-1); tabCell.innerHTML = element.symbol;
+		var tabCell = tr.insertCell(-1); tabCell.innerHTML = bidElement.quantity + " @$" + bidElement.price 
+					+ " from " + bidElement.owner + " at " + bidElement.time.substring(5);
+	  });
+
+	  Object(element.market.asks).forEach(function(askElement) {
+		totalAsksValue = totalAsksValue + (askElement.quantity * askElement.price);
+		var tr = level1AskTable.insertRow(-1);
+		var tabCell = tr.insertCell(-1); tabCell.innerHTML = element.symbol;
+		var tabCell = tr.insertCell(-1); tabCell.innerHTML = askElement.quantity + " @$" + askElement.price 
+						+ " from " + askElement.owner + " at " + askElement.time.substring(5);
+	  });
+
+	  var tr = topOfBookTable.insertRow(-1);
+
+	  if (element.market.bids.length !== 0 && element.market.asks.length !== 0) {
+		if (element.market.bids[0].price >= element.market.asks[0].price) {
+		  tr.style.color = "#FF3";
+		}
+	  }
+
+	  var tabCell = tr.insertCell(-1); tabCell.innerHTML = element.symbol;
+	  var tabCell = tr.insertCell(-1); tabCell.innerHTML = element.market.bids.length; tabCell.setAttribute("align", "right");
+	  if (element.market.bids.length === 0) {
+		tr.insertCell(-1);
+		tr.insertCell(-1);
+	  }
+	  else {
+		var tabCell = tr.insertCell(-1); tabCell.innerHTML = element.market.bids[0].quantity + " @$" + element.market.bids[0].price;
+		var tabCell = tr.insertCell(-1); tabCell.innerHTML = "$" + totalBidsValue.toLocaleString(); tabCell.setAttribute("align", "right");
+	  }
+
+	  var tabCell = tr.insertCell(-1); tabCell.innerHTML = element.market.asks.length; tabCell.setAttribute("align", "right");
+	  if (element.market.asks.length === 0) {
+		tr.insertCell(-1);
+		tr.insertCell(-1);
+	  }
+	  else {
+		var tabCell1 = tr.insertCell(-1); tabCell1.innerHTML = element.market.asks[0].quantity + " @$" + element.market.asks[0].price;
+		var tabCell2 = tr.insertCell(-1); tabCell2.innerHTML = "$" + totalAsksValue.toLocaleString(); tabCell2.setAttribute("align", "right");
+	  }
+	});
+
+	level1BidDiv.innerHTML = ""; level1BidDiv.appendChild(level1BidTable);
+	level1AskDiv.innerHTML = ""; level1AskDiv.appendChild(level1AskTable);
+
+    bookSummary.innerHTML = ""; bookSummary.appendChild(topOfBookTable);
+  }
+
+  window.addEventListener("load", init, false);
+</script>
+
+<div style="width:100%; padding:5px 2px 5px;">
+  <span style="float:left"><font size="5"><b>Book View</b></font></span>
+  <span style="float:right"><font size="2"><i>Updated at <span id="updTs"></span></i></font></span>
+</div><hr/>
+
+<div class="section" style="width:100%; padding-bottom:24px; ">
+  <span style="float: left"><button id="disconnectBtn" disabled onclick="doClose()">Disconnect</button>
+	  <button id="connectBtn" onclick="mdWebSocket()">Connect</button>
+	  <button id="refreshBtn" disabled onclick="doSend()">Refresh</button></span>
+  <span style="float: right"><label style="font-style:italic; width:100%; font-size:smaller">
+	  Server Message: <label id="serverMessage">Initialized</label></span>
+</div><hr/>
+
+<div class="section">
+  <Label class="divCaption">New Order </Label>&nbsp;&nbsp;&nbsp;
+  Trdr ID <input id="SenderCompID" maxlength="15" size="10" value=Trader1></input>
+  Symbol <input id="Symbol" maxlength="6" size="4" value=IBM></input>
+  Side <select id="Side"><option value="1">Buy</option><option value="2">Sell</option></select>
+  Shares <input id="OrderQty" maxlength="10" size="6" value=100></input>
+  Price <input id="Price" maxlength="10" size="6" value=50></input>
+  <label id="orderAcceptResponse"></label></font>
+  <button onclick="sendOrder()">Submit Order</button>
+</div><hr/>
+
+<div class="quotetable" style="clear:both; float:left; padding-right:2px; ">
+  <label class="divCaption">Top of the Book</label>
+  <span id="bookSummary">
+	<table><tr><th>Symbol</th><th>Bids</th><th>Top Bid</th><th>Asks</th><th>Top Ask</th></tr></table>
+  </span>
+</div>
+<div class="quotetable">
+  <label class="divCaption">Full Depth</label>
+  <table>
+	<tr><th style="horizontal-align:center">Bids</th><th align="center">Asks</th></tr>
+	<tr style="background-color:black; "><td id="level1BidDiv" style="vertical-align:top"></td>
+		<td id="level1AskDiv" style="vertical-align:top"></td></tr>
+  </table>
+</div>

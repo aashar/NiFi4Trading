@@ -1,3 +1,0 @@
-org.aasharblog.nifi4trading.ConvertFIXtoXML
-org.aasharblog.nifi4trading.ExtractFIXFields
-org.aasharblog.nifi4trading.ProcessOrder

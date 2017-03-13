@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.aasharblog.nifi4trading</groupId>
+    <artifactId>nifi-fix-bundle</artifactId>
+    <version>0.0.3-SNAPSHOT</version>
+  </parent>
+  <artifactId>qfix-samples</artifactId>
+  <name>Quickfix Samples with NiFi</name>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>WSO2</id>
+      <name>WSO2 Repository</name>
+      <url>http://dist.wso2.org/maven2/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+  <dependencies>
+	<dependency>
+		<groupId>quickfixj</groupId>
+		<artifactId>quickfixj-all</artifactId>
+		<version>${quickfix.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-databind</artifactId>
+		<version>${jackson-databind.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.4</version>
+		<scope>test</scope>
+	</dependency>
+  </dependencies>
+ </project>

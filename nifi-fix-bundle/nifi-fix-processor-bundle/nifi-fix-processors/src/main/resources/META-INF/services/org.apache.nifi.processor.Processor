@@ -1,3 +1,6 @@
+org.aasharblog.nifi4trading.AcceptOrder
 org.aasharblog.nifi4trading.ConvertFIXtoXML
 org.aasharblog.nifi4trading.ExtractFIXFields
+org.aasharblog.nifi4trading.MatchOrders
+org.aasharblog.nifi4trading.GetOrderBook
 org.aasharblog.nifi4trading.ProcessOrder

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Generate Test Orders</title>
+<style>
+  body { background-color:black; color: #ffffff; min-width:550px; font-family: "Trebuchet MS"; }
+  hr { clear:both; }
+  tbody tr:nth-child(even) { background: #222222; }
+  div.section { padding:2px; clear:both }
+  div.quotetable { padding:2px; display: inline-block; white-space: nowrap; }
+  label.divCaption { font-weight: bold; text-decoration: underline; }
+  button { background-color:#008CBA; padding: 5px 25px; text-align: center; border-radius: 6px;
+	display: inline-block; border: none; color: #ffffff; text-decoration: underline; }
+  button:hover { background-color: #DAA520; }
+  button:disabled { opacity: 0.6; text-decoration: none; cursor: not-allowed; }
+</style>
+<script language="javascript" type="text/javascript">
+  var wsUri = "ws://localhost:8085/order";
+  
+  var symbols = [ "IBM", "ORCL", "MSFT", "AMZN", "GOOGL", "HDP" ];
+  var sides = [ "1", "2" ];
+
+  function init() {
+    bookSummary = document.getElementById("bookSummary");
+    bookEntriesTable = document.getElementById("bookEntriesTable");
+    toWebSocket();
+  }
+
+  function genTestOrder() {
+    var order = { };
+	
+	order.SenderCompID = "TestTrader" + Math.floor(Math.random() * 20);
+	order.Symbol = symbols[Math.floor(Math.random() * symbols.length)];
+	order.Side = sides[Math.floor(Math.random() * sides.length)];
+	order.OrderQty = (Math.floor(Math.random() * 7) + 1) * 100;
+	order.Price = (Math.floor(Math.random() * 5) + 50);
+	
+	return order;
+  }
+  
+  function sendOrder() {
+    websocket.send(JSON.stringify(genTestOrder()));
+  }
+
+  function toWebSocket()
+  {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function onOpen(evt)
+  {
+    logToScreen("CONNECTED");
+    document.getElementById("connectBtn").disabled = true;
+    document.getElementById("disconnectBtn").disabled = false;
+	sendOrder();
+  }
+
+  function onClose(evt)
+  {
+    logToScreen("DISCONNECTED");
+    document.getElementById("connectBtn").disabled = false;
+    document.getElementById("disconnectBtn").disabled = true;
+  }
+
+  function onMessage(evt)
+  {
+ 	document.getElementById("updTs").innerHTML = new Date().toJSON().slice(0,19).replace(/-/g,'/');
+ 	document.getElementById("serverMessage").innerHTML = evt.data;
+//	setTimeout(function () {
+		{ sendOrder(); }
+//	}, 20);
+ }
+
+  function onError(evt)
+  {
+    logToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doClose()
+  {
+      websocket.close();
+  }
+
+  function logToScreen(message)
+  {
+ 	document.getElementById("updTs").innerHTML = new Date().toJSON().slice(0,19).replace(/-/g,'/');
+ 	document.getElementById("serverMessage").innerHTML = message;
+  }
+
+  window.addEventListener("load", init, false);
+
+</script>
+<div class="section">
+  <span style="width:33%; float:left"><font size="4"><b>Generate Test Orders</b></font></span>
+  <span style="width:34%; float:right"><font size="2"><i>Updated at <span id="updTs"></span></i></font></span>
+</div><hr/>
+
+<div class="section">
+  <button id="disconnectBtn" onclick="doClose()">Disconnect</button>
+  <button id="connectBtn" onclick="toWebSocket()">Connect</button>
+</div>
+<hr/>
+<span style="width:100%; float:right"><font size="2"><i>Server Message: <span id="serverMessage">Initialized</span></i></font></span>

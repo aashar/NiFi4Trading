@@ -1,42 +1,54 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.aasharblog.nifi4trading</groupId>
     <artifactId>nifi-fix-processor-bundle</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
   </parent>
+
   <artifactId>nifi-fix-processors-nar</artifactId>
+  <name>Processors in NAR packaging</name>
+
   <packaging>nar</packaging>
-  <name>NAR package for FIX Processors</name>
-  <description>FIX Processors packaged in nar, NiFi packaging format</description>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>WSO2</id>
+      <name>WSO2 Repository</name>
+      <url>http://dist.wso2.org/maven2/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
   <dependencies>
   	<dependency>
   		<groupId>org.aasharblog.nifi4trading</groupId>
-  		<artifactId>nifi-fix-processors</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
+  		<artifactId>nifi-fix-matching-service-nar</artifactId>
+  		<version>${nifi4trading.version}</version>
+  		<type>nar</type>
   	</dependency>
+
+  	<dependency>
+  		<groupId>org.aasharblog.nifi4trading</groupId>
+  		<artifactId>nifi-fix-processors</artifactId>
+  		<version>${nifi4trading.version}</version>
+  	</dependency>
+
+	<dependency>
+		<groupId>quickfixj</groupId>
+		<artifactId>quickfixj-all</artifactId>
+		<version>${quickfix.version}</version>
+	</dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.nifi</groupId>
-        <artifactId>nifi-nar-maven-plugin</artifactId>
-        <version>1.0.1-incubating</version>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <fork>true</fork>
-          <optimize>true</optimize>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
