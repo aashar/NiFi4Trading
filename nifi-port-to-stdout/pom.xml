@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.aasharblog.nifi-utils</groupId>
+  <artifactId>nifi-port-to-stdout</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Nifi Port to STDOUT</name>
+  <description>Useful for real-time flow development</description>
+  <dependencies>
+   	<dependency>
+      <groupId>org.apache.nifi</groupId>
+      <artifactId>nifi-site-to-site-client</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+	<dependency>
+        <groupId>org.apache.nifi</groupId>
+        <artifactId>nifi-api</artifactId>
+     	<version>1.1.0</version>
+    </dependency>
+   	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.5.6</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>1.4.3</version>
+	</dependency>
+  </dependencies>
+</project>
