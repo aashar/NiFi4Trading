@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="ISO-8859-1">
+   <title>Install Instructions for YACE</title>
+</head>
+<body>
+<p>Steps to deploy <b>Yet Another Crossing Engine, YACE</b></p>
+<ol type="I">
+<li>Download NiFi from <a href="https://nifi.apache.org/download.html">https://nifi.apache.org/download.html</a>.
+	Follow the installation instructions for your platform to finish the installation. This project is developed using
+	NiFi 1.1.0 library and it has been verified to works with NiFi versions 1.1.0, 1.1.1 & 1.1.2.</li>
+
+<li>Check out version 0.0.3 of NiFi4Trading from github at
+	<a href="https://github.com/aashar/NiFi4Trading/archive/opensource.zip">https://github.com/aashar/NiFi4Trading/archive/opensource.zip</a>.
+
+<li>Copy a) nifi-fix-matching-service-nar-0.0.3-SNAPSHOT.nar, b) nifi-fix-matching-simple-service-nar-0.0.3-SNAPSHOT.nar, and
+    c) nifi-fix-processors-nar-0.0.3-SNAPSHOT.nar from NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/compiled
+	folder to <NIFI_HOME>/lib directory.</li>
+
+<li>For those we prefer to compile from the source, this project can be built with Maven.</li>
+
+<li>Start NiFi and go to http://localhost:8080/nifi. It could take a while for NiFi to start.
+    Please update the URL if NiFi is deployed on a remote server and / or on a different port.</li>
+
+<li>Import YACE template using yace.xml file from NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/NiFiTemplates
+	folder using the NiFi template import function</li>
+
+<li>Copy FIX42.xml file from NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/config folder to a local
+	directory and configure the ExtractFIXFields processor to use this file as a FIX dictionary. This step is required for receiving
+	orders in FIX messaging format.</li>
+
+<li>The following 2 steps are required to receive messages from NiFi and print them on console. There are other options available to support
+	this function. I find this utility very useful for general streams processing solution development. Since the scope of this utility is not
+	limited to nifi-fix bundle, it is developed as a separate project.
+
+<li>Configure NiFi to support remote raw NiFi port watchers by setting nifi.web.https.host and nifi.web.https.port entries in nifi.properties
+	file located in <NiFi_HOME>/conf directory. FYI, I use port 8090 for the NiFi remote raw TCP port. Restart NiFi to apply this change.</li>
+
+<li>Copy nifi-port-to-stdout-0.0.1-SNAPSHOT.jar from NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/compiled folder
+	to a local directory. Use portlisteners.bat script in NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/scripts
+	folder to start listening on the necessary NiFi ports. These processes do not need to run on the same server where the NiFi instance is running.
+	I prefer to use desktop to run these processes and spare the server resources for NiFi.
+
+<li>Copy WebSocketClientforMD.html from NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/scripts folder to a
+	local directory and update the URL for NiFi if necessary. This file uses WebSocket to get YACE order book snapshot. This html file
+	contains an order entry section for quick order entry using HTTP GET. This order entry action may generate errors due to cross origin
+	requests. It is safe to ignore these errors.</li>
+
+<li>sendordercommand.txt file in NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/scripts folder contains the
+	REST API to send an order. It uses HTTP GET interface.</li>
+
+<li>Copy GenTestOrders.html from NiFi4Trading-opensource.zip/NiFi4Trading-opensource/nifi-fix-bundle/artifacts/scripts folder to a local
+	directory and update the URL for NiFi if necessary. After the rest of the setup is complete open it in a browser. This test script is
+	designed to continuously generate orders. It starts with a single order and continues to send new orders for every order-ack it receives.
+	Please close this browser tab when sufficient orders are generated in the system.</li>
+</ol>
+</body>
+</html>

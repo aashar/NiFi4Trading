@@ -1,1 +1,1 @@
-http://192.168.1.15/order?SenderCompID=TRD1&Symbol=IBM&Side=2&OrderQty=300&Price=100rQty=100&OrdType=1&ClOrdID=jjj
+http://localhost:8086/order?SenderCompID=TRD1&Symbol=IBM&Side=2&OrderQty=300&Price=100rQty=100&OrdType=2&ClOrdID=jjj
