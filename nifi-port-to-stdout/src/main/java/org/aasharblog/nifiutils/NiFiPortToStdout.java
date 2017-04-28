@@ -73,12 +73,5 @@ public class NiFiPortToStdout {
 			System.err.println("Syntax <exec> <url> <NiFi Portname>");
 			return;
 		}
-		SiteToSiteClientConfig config = new SiteToSiteClient.Builder()
-			 .url(args[0])
-			 .portName(args[1])
-			 .requestBatchCount(1)
-			 .buildConfig();
-
-		new NiFiPortToStdout(config).start(args[1]);
 	}
 }
