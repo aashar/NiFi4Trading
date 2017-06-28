@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.nifi.remote.client.SiteToSiteClient;
 import org.apache.nifi.remote.client.SiteToSiteClientConfig;
@@ -91,7 +92,7 @@ public class Engine implements MessageListener {
  	}
 
 	@Override
-	public void messageReceived(String string) throws Exception {
-		niFiDispatcher.send(string);
+	public void messageReceived(String string, Map<String, String> attr) throws Exception {
+		niFiDispatcher.send(string, attr);
 	}
 }
