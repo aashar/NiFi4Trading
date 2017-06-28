@@ -34,10 +34,10 @@ public class Engine implements MessageListener {
         listeners.add(toAdd);
     }
 
-    public Engine(InputStream inputStream) throws ConfigError, FieldConvertError {
-        settings = new SessionSettings(inputStream);
+    public Engine(InputStream configFileStream) throws ConfigError, FieldConvertError {
+        settings = new SessionSettings(configFileStream);
 
-        Application application = new Application();
+        Application application = new Application(settings);
         FileStoreFactory storeFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(settings);
         acceptor = new SocketAcceptor(application, storeFactory, settings,
@@ -73,18 +73,18 @@ public class Engine implements MessageListener {
 	public static void main(String[] args) {
 		
         try {
-            InputStream inputStream = null;
+            InputStream configFileStream = null;
             if (args.length == 0) {
-                inputStream = Engine.class.getResourceAsStream("dcrec.cfg");
+                configFileStream = Engine.class.getResourceAsStream("dcrec.cfg");
             } else if (args.length == 1) {
-                inputStream = new FileInputStream(args[0]);
+                configFileStream = new FileInputStream(args[0]);
             }
-            if (inputStream == null) {
+            if (configFileStream == null) {
                 System.out.println("usage: " + Engine.class.getName() + " [configFile].");
                 return;
             }
             
-            new Engine(inputStream).run();
+            new Engine(configFileStream).run();
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
